@@ -16,3 +16,15 @@ pub fn start(mut players: (impl Player, impl Player)) {
 	println!("\n==== RESULT ====\n");
 	println!("{}", g);
 }
+
+pub fn duel(mut players: (impl Player, impl Player)) -> (i32, i32) {
+	let mut g = GameState::new();
+	while !g.over() {
+		match g.active_player() {
+			Cell::Black => g.place(players.0.make_move(&g)),
+			Cell::White => g.place(players.1.make_move(&g)),
+			_ => false,
+		};
+	}
+	(g.score(Cell::Black), g.score(Cell::White))
+}

@@ -86,14 +86,14 @@ impl GameState {
 		}
 	}
 
-	pub fn evaluate(&self, player: Cell, weights: [[f64; 8]; 8]) -> f64 {
+	pub fn evaluate(&self, player: Cell, weights: [[i8; 8]; 8]) -> f64 {
 		let mut tot = 0.0;
 		for i in 0..8 {
 			for j in 0..8 {
 				tot += if self.board[i][j] == player {
-					weights[i][j]
+					weights[i][j] as f64
 				} else if self.board[i][j] == -player {
-					-weights[i][j]
+					-(weights[i][j] as f64)
 				} else {
 					0.0
 				}

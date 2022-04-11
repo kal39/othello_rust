@@ -3,7 +3,7 @@ use super::game_state::GameState;
 use super::player::Player;
 
 pub struct Bot {
-	weights: [[f64; 8]; 8],
+	weights: [[i8; 8]; 8],
 	max_depth: i32,
 	player: Cell,
 }
@@ -29,27 +29,18 @@ impl Player for Bot {
 			}
 		}
 
-		println!(
-			"x (col): {}, y (row): {}, score: {}",
-			max_move.0, max_move.1, max
-		);
+		// println!(
+		// 	"x (col): {}, y (row): {}, score: {}",
+		// 	max_move.0, max_move.1, max
+		// );
 		max_move
 	}
 }
 
 impl Bot {
-	pub fn new(max_depth: i32) -> Bot {
+	pub fn new(max_depth: i32, weights: Vec<i8>) -> Bot {
 		Bot {
-			weights: [
-				[100.0, -20.0, 10.0, 5.0, 5.0, 10.0, -20.0, 100.0],
-				[-20.0, -50.0, -2.0, -2.0, -2.0, -2.0, -50.0, -20.0],
-				[10.0, -2.0, -1.0, -1.0, -1.0, -1.0, -2.0, 10.0],
-				[5.0, -2.0, -1.0, -1.0, -1.0, -1.0, -2.0, 5.0],
-				[5.0, -2.0, -1.0, -1.0, -1.0, -1.0, -2.0, 5.0],
-				[10.0, -2.0, -1.0, -1.0, -1.0, -1.0, -2.0, 10.0],
-				[-20.0, -50.0, -2.0, -2.0, -2.0, -2.0, -50.0, -20.0],
-				[100.0, -20.0, 10.0, 5.0, 5.0, 10.0, -20.0, 100.0],
-			],
+			weights: Bot::create_cell_weights(weights),
 			max_depth: max_depth,
 			player: Cell::Empty,
 		}
@@ -106,5 +97,27 @@ impl Bot {
 				min
 			}
 		}
+	}
+
+	fn create_cell_weights(weights: Vec<i8>) -> [[i8; 8]; 8] {
+		let mut cell_weights = [[0; 8]; 8];
+		for i in 0..8 {
+			for j in 0..8 {
+				let i2 = if i < 4 { i } else { 7 - i };
+				let j2 = if j < 4 { j } else { 7 - j };
+				let (i3, j3) = if i2 >= j2 { (i2, j2) } else { (j2, i2) };
+				let k = if j3 == 0 {
+					i3
+				} else if j3 == 1 {
+					i3 + 4 - 1
+				} else if j3 == 2 {
+					i3 + 7 - 2
+				} else {
+					i3 + 9 - 3
+				};
+				cell_weights[i][j] = weights[k];
+			}
+		}
+		cell_weights
 	}
 }
